@@ -26,6 +26,7 @@
     "compression": "^1.7.3",
     "core-js": "^2.5.4",
     "express": "^4.16.4",
+    "now": "^13.1.2",
     "rxjs": "~6.3.3",
     "typescript": "~3.1",
     "yes-https": "^0.0.4",
