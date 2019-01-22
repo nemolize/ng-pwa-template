@@ -1,0 +1,37 @@
+version: 2
+
+defaults: &defaults
+  docker:
+  - image: node:lts-alpine
+    environment:
+      CONFIG_VERSION: 2
+
+_steps:
+  - &save_cache_node_modules
+    save_cache:
+      name: Saving node_modules as cache
+      key: node_modules-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "yarn.lock" }}
+      paths:
+      - node_modules
+  - &restore_cache_node_modules
+    restore_cache:
+      name: Restoring cached node_modules
+      key: node_modules-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "yarn.lock" }}
+
+jobs:
+  deploy:
+    <<: *defaults
+    steps:
+    - run: apk add --no-cache ca-certificates
+    - checkout
+    - *restore_cache_node_modules
+    - run: yarn
+    - *save_cache_node_modules
+    - run: npm run build
+    - run: now -t ${NOW_TOKEN} dist/ng-pwa-template
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+    - deploy
