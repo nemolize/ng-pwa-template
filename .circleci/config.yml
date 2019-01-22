@@ -27,8 +27,8 @@ jobs:
     - *restore_cache_node_modules
     - run: yarn
     - *save_cache_node_modules
-    - run: npm run build
-    - run: now -t ${NOW_TOKEN} dist/ng-pwa-template
+    - run: yarn build
+    - run: yarn now -t ${NOW_TOKEN} dist/ng-pwa-template
 
 workflows:
   version: 2
