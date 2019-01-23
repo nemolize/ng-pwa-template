@@ -28,7 +28,8 @@ jobs:
     - run: yarn
     - *save_cache_node_modules
     - run: yarn build
-    - run: yarn now -t ${NOW_TOKEN} dist/ng-pwa-template
+    - deploy:
+        command: npx now alias -t ${NOW_TOKEN} $(npx now -t ${NOW_TOKEN} dist/ng-pwa-template) ng-pwa-template.now.sh
 
 workflows:
   version: 2
