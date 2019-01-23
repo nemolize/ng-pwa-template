@@ -1,8 +1,13 @@
+[![CircleCI](https://circleci.com/gh/nemolize/ng-pwa-template.svg?style=svg)](https://circleci.com/gh/nemolize/ng-pwa-template)
+
 # ng-pwa-website
 
 An Angular template project equipped with PWA.
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.1.
+# Usage
+1. Clone this repository
+2. Rename the string `'ng-pwa-template'` with your project name
+3. Enjoy
 
 ## Development server
 
