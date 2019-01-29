@@ -2,27 +2,23 @@ version: 2
 
 defaults: &defaults
   docker:
-  - image: node:lts-alpine
-    environment:
-      CONFIG_VERSION: 2
-
+  - image: circleci/node:10-browsers
 _steps:
   - &save_cache_node_modules
     save_cache:
       name: Saving node_modules as cache
-      key: node_modules-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "yarn.lock" }}
+      key: v1-node_modules-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "yarn.lock" }}
       paths:
       - node_modules
   - &restore_cache_node_modules
     restore_cache:
       name: Restoring cached node_modules
-      key: node_modules-{{ arch }}-{{ .Environment.CONFIG_VERSION }}-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "yarn.lock" }}
+      key: v1-node_modules-{{ .Environment.CIRCLE_WORKING_DIRECTORY }}-{{ checksum "yarn.lock" }}
 
 jobs:
   deploy:
     <<: *defaults
     steps:
-    - run: apk add --no-cache ca-certificates
     - checkout
     - *restore_cache_node_modules
     - run: yarn
@@ -30,6 +26,13 @@ jobs:
     - run: yarn build
     - deploy:
         command: npx now alias -t ${NOW_TOKEN} $(npx now -t ${NOW_TOKEN} dist/ng-pwa-template) ng-pwa-template.now.sh
+    - run:
+        name: benchmark
+        command: |
+          yarn add lighthouse
+          npx lighthouse https://ng-pwa-template.now.sh/ --output=json --output-path=./score.json --quiet --chrome-flags="--headless"
+          SCORE=`node -p "JSON.stringify(Object.entries(require('./score').categories).reduce((p,[k,v])=>({...p,[k]:v.score}),{}))"`
+          curl -X POST -H "Content-Type: application/json" -d $SCORE "https://perfshistory.firebaseio.com/items.json?auth=$DATABASE_SECRET"
 
 workflows:
   version: 2
