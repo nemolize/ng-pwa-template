@@ -29,7 +29,7 @@ jobs:
     - run:
         name: benchmark
         command: |
-          yarn add lighthouse
+          yarn add lighthouse -s
           npx lighthouse https://ng-pwa-template.now.sh/ --output=json --output-path=./score.json --quiet --chrome-flags="--headless"
           SCORE=`node -p "JSON.stringify(Object.entries(require('./score').categories).reduce((p,[k,v])=>({...p,[k]:v.score}),{}))"`
           curl -X POST -H "Content-Type: application/json" -d $SCORE "https://perfshistory.firebaseio.com/items.json?auth=$DATABASE_SECRET"
